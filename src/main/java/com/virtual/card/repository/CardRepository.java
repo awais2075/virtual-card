@@ -23,6 +23,8 @@ public interface CardRepository extends JpaRepository<Card, UUID> {
 
     boolean existsByCardholderNameAndStatus(String cardholderName, CardStatus status);
 
-    List<Card> findByStatusAndExpiryDateBefore(CardStatus status, LocalDate expiryDate);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select c from Card c where c.status = :status and c.expiryDate < :expiryDate")
+    List<Card> findByStatusAndExpiryDateBefore(@Param("status") CardStatus status, @Param("expiryDate") LocalDate expiryDate);
 
 }
